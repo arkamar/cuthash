@@ -13,14 +13,78 @@
 #	define info(...)
 #endif
 
-char * argv0;
-char * separators = "\t";
+#define MIN(x, y) ((x) < (y)) ? (x) : (y)
+#define MAX(x, y) ((x) > (y)) ? (x) : (y)
 
+struct range {
+	size_t min, max;
+	struct range * next;
+};
+
+char * argv0;
+static char * separators = "\t";
+static struct range * list = NULL;
+
+static
 void
 usage() {
 	fprintf(stderr,
-		"Usage: %s [-s separators] [-d digest_algorithm] <fields ...>\n", argv0);
+		"Usage: %s [-s separators] [-d digest_algorithm] list\n", argv0);
 	exit(1);
+}
+
+static
+void
+insert(struct range * r) {
+	struct range * l, *p, *t;
+
+	for (p = NULL, l = list; l; p = l, l = l->next) {
+		if (r->max && r->max + 1 < l->min) {
+			r->next = l;
+			break;
+		} else if (!l->max || r->min < l->max + 2) {
+			l->min = MIN(r->min, l->min);
+			for (p = l, t = l->next; t; p = t, t = t->next)
+				if (r->max && r->max + 1 < t->min)
+					break;
+			l->max = (p->max && r->max) ? MAX(p->max, r->max) : 0;
+			l->next = t;
+			return;
+		}
+	}
+	if (p)
+		p->next = r;
+	else
+		list = r;
+}
+
+static
+void
+parselist(char * str) {
+	char * s;
+	size_t n = 1;
+	struct range * r;
+
+	if (!*str) {
+		fprintf(stderr, "empty list\n");
+		exit(1);
+	}
+
+	for (s = str; *s; s++)
+		if (*s == ',')
+			n++;
+
+	r = calloc(n, sizeof(struct range));
+	for (s = str; n; n--, s++) {
+		r->min = (*s == '-') ? 1 : strtoul(s, &s, 10);
+		r->max = (*s == '-') ? strtoul(s + 1, &s, 10) : r->min;
+		r->next = NULL;
+		if (!r->min || (r->max && r->max < r->min) || (*s && *s != ',')) {
+			fprintf(stderr, "bad list value\n");
+			exit(1);
+		}
+		insert(r++);
+	}
 }
 
 int
@@ -46,6 +110,11 @@ main(int argc, char * argv[]) {
 	default:
 		usage();
 	} ARGEND
+
+	if (argc != 1)
+		usage();
+
+	parselist(*argv);
 
 	if (digest_algorithm) {
 		OpenSSL_add_all_digests();
@@ -74,6 +143,7 @@ main(int argc, char * argv[]) {
 	}
 
 	free(line);
+	free(list);
 
 	EVP_MD_CTX_destroy(ctx);
 	EVP_cleanup();
