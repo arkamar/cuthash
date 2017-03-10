@@ -19,19 +19,20 @@ char * separators = "\t";
 void
 usage() {
 	fprintf(stderr,
-		"Usage: %s [-s separators] <fields ...>\n", argv0);
+		"Usage: %s [-s separators] [-d digest_algorithm] <fields ...>\n", argv0);
 	exit(1);
 }
 
 int
 main(int argc, char * argv[]) {
 	char * line = NULL;
+	char * digest_algorithm = NULL;
 	size_t cap = 0;
 	ssize_t len;
 	int i;
 
 	unsigned char hash[EVP_MAX_MD_SIZE];
-	int hash_len;
+	unsigned int hash_len;
 	EVP_MD_CTX * ctx;
 	const EVP_MD * md = EVP_ripemd160();
 
@@ -39,9 +40,21 @@ main(int argc, char * argv[]) {
 	case 's':
 		separators = EARGF(usage());
 		break;
+	case 'd':
+		digest_algorithm = EARGF(usage());
+		break;
 	default:
 		usage();
 	} ARGEND
+
+	if (digest_algorithm) {
+		OpenSSL_add_all_digests();
+		md = EVP_get_digestbyname(digest_algorithm);
+		if (!md) {
+			fprintf(stderr, "Unknown message digest %s\n", digest_algorithm);
+			exit(1);
+		}
+	}
 
 	ctx = EVP_MD_CTX_create();
 
