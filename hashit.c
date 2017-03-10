@@ -73,8 +73,6 @@ main(int argc, char * argv[]) {
 		puts("");
 	}
 
-	info("Done\n");
-
 	free(line);
 
 	EVP_MD_CTX_destroy(ctx);
