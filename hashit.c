@@ -103,6 +103,10 @@ main(int argc, char * argv[]) {
 	ARGBEGIN {
 	case 's':
 		separators = EARGF(usage());
+		if (!*separators) {
+			fprintf(stderr, "Empty separator is forbiden\n");
+			exit(1);
+		}
 		break;
 	case 'd':
 		digest_algorithm = EARGF(usage());
@@ -120,7 +124,7 @@ main(int argc, char * argv[]) {
 		OpenSSL_add_all_digests();
 		md = EVP_get_digestbyname(digest_algorithm);
 		if (!md) {
-			fprintf(stderr, "Unknown message digest %s\n", digest_algorithm);
+			fprintf(stderr, "Unknown message digest '%s'\n", digest_algorithm);
 			exit(1);
 		}
 	}
