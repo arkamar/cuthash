@@ -1,0 +1,30 @@
+.Dd March 10, 2017
+.Dt HASHIT 1
+.Sh NAME
+.Nm hashit
+.Nd hash selected items
+.Sh SYNOPSIS
+.Nm
+.Op Fl s Ar separators
+.Op Fl d Ar digest_algorithm
+.Ar list
+.Sh DESCRIPTION
+.Nm
+cuts
+.Ar list
+of items separated by
+.Ar separators
+and computes hash to them.
+The result is the input line concatenated with hash of items and separated by tabulator.
+.Pp
+.Nm
+allows to choose
+.Ar digest_algorithm
+from a set of digest algorithms provided by openssl.
+See
+.Xr dgst 1 .
+.Sh BUGS
+Please report them.
+.Sh SEE ALSO
+.Xr dgst 1 ,
+.Xr openssl 1 ,
