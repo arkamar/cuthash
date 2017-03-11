@@ -8,7 +8,7 @@ all: $(BIN)
 $(BIN): $(OBJ)
 
 %: %.o
-	$(CC) -o $@ $(LDFLAGS) $<
+	$(CC) $(LIBS) -o $@ $(LDFLAGS) $<
 
 %.o: %.c config.mk
 	$(CC) $(CFLAGS) -c -o $@ $<
