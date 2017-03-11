@@ -91,9 +91,10 @@ int
 main(int argc, char * argv[]) {
 	char * line = NULL;
 	char * digest_algorithm = NULL;
+	char * tok;
 	size_t cap = 0;
 	ssize_t len;
-	int i;
+	int i, c;
 
 	unsigned char hash[EVP_MAX_MD_SIZE];
 	unsigned int hash_len;
@@ -133,12 +134,22 @@ main(int argc, char * argv[]) {
 
 	while ((len = getline(&line, &cap, stdin)) > 0) {
 		line[len--] = '\0';
+		fwrite(line, 1, len, stdout);
 
-		EVP_DigestInit_ex(ctx, md, NULL);
-		EVP_DigestUpdate(ctx, line, len);
+		EVP_DigestInit(ctx, md);
+
+		struct range * r = list;
+		for (c = 1, tok = strtok(line, separators); tok; tok = strtok(NULL, separators), c++) {
+			if (r && c >= r->min && c <= r->max) {
+				info("[%d]<%s>\n", c, tok);
+				EVP_DigestUpdate(ctx, tok, strlen(tok));
+				if (c == r->max)
+					r = r->next;
+			}
+		}
+
 		EVP_DigestFinal(ctx, hash, &hash_len);
 
-		fwrite(line, 1, len, stdout);
 		fwrite("\t", 1, 1, stdout);
 
 		for (i = 0; i < hash_len; i++)
