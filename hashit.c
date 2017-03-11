@@ -137,7 +137,7 @@ main(int argc, char * argv[]) {
 	ctx = EVP_MD_CTX_create();
 
 	while ((len = getline(&line, &cap, stdin)) > 0) {
-		line[len--] = '\0';
+		line[--len] = '\0';
 		fwrite(line, 1, len, stdout);
 
 		EVP_DigestInit(ctx, md);
