@@ -1,8 +1,11 @@
 include config.mk
 
-all: hashit
+BIN = cuthash
+OBJ = $(BIN:=.o)
 
-hashit: hashit.o
+all: $(BIN)
+
+$(BIN): $(OBJ)
 
 %: %.o
 	$(CC) $(LDFLAGS) -o $@ $<
