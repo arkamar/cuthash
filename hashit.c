@@ -156,7 +156,7 @@ main(int argc, char * argv[]) {
 
 		EVP_DigestFinal(ctx, hash, &hash_len);
 
-		fwrite("\t", 1, 1, stdout);
+		fwrite(separators, 1, 1, stdout);
 
 		for (i = 0; i < hash_len; i++)
 			printf("%02x", hash[i]);
