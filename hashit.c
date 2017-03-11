@@ -140,7 +140,9 @@ main(int argc, char * argv[]) {
 
 		struct range * r = list;
 		for (c = 1, tok = strtok(line, separators); tok; tok = strtok(NULL, separators), c++) {
-			if (r && c >= r->min && c <= r->max) {
+			if (!r)
+				break;
+			if (c >= r->min && c <= r->max) {
 				info("[%d]<%s>\n", c, tok);
 				EVP_DigestUpdate(ctx, tok, strlen(tok));
 				if (c == r->max)
