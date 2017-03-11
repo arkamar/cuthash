@@ -2,7 +2,7 @@
 .Dt CUTHASH 1
 .Sh NAME
 .Nm cuthash
-.Nd hash selected items
+.Nd hash of selected items
 .Sh SYNOPSIS
 .Nm
 .Op Fl s Ar separators
@@ -10,12 +10,19 @@
 .Ar list
 .Sh DESCRIPTION
 .Nm
-cuts
+cuts a
 .Ar list
 of items separated by
 .Ar separators
 and computes hash to them.
-The result is the input line concatenated with hash of items and separated by tabulator.
+The result hash is concatenated with an input line by first
+.Ar separator .
+Default separator is tabulator.
+.Pp
+.Ar list
+is comma separated list of numbers and ranges starting from 1.
+Ranges have the form 'M-N'.
+Numbers and ranges may be repeated, overlapping and in any order.
 .Pp
 .Nm
 allows to choose
