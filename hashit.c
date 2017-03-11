@@ -74,7 +74,11 @@ parselist(char * str) {
 		if (*s == ',')
 			n++;
 
-	r = calloc(n, sizeof(struct range));
+	r = malloc(n * sizeof(struct range));
+	if (!r) {
+		perror("Cannot allocate memory");
+		exit(1);
+	}
 	for (s = str; n; n--, s++) {
 		r->min = (*s == '-') ? 1 : strtoul(s, &s, 10);
 		r->max = (*s == '-') ? strtoul(s + 1, &s, 10) : r->min;
