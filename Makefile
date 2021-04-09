@@ -1,20 +1,20 @@
-include config.mk
+VERSION = 0.0
 
 BIN = cuthash
-OBJ = $(BIN:=.o)
+
+PREFIX = /usr
+MANPREFIX = $(PREFIX)/share/man
+
+CPPFLAGS += -D_DEFAULT_SOURCE
+CPPFLAGS += -DOPENSSL_API_COMPAT=0x00908000L
+
+CFLAGS += $(shell pkg-config --cflags libcrypto)
+LDLIBS += $(shell pkg-config --libs libcrypto)
 
 all: $(BIN)
 
-$(BIN): $(OBJ)
-
-%: %.o
-	$(CC) $(LIBS) -o $@ $(LDFLAGS) $<
-
-%.o: %.c config.mk
-	$(CC) $(CFLAGS) -c -o $@ $<
-
 clean:
-	$(RM) hashit *.o
+	$(RM) $(BIN) *.o
 
 install: all
 	@echo Installing executable file to $(DESTDIR)$(PREFIX)/bin
