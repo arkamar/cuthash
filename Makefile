@@ -13,6 +13,8 @@ LDLIBS += $(shell pkg-config --libs libcrypto)
 
 all: $(BIN)
 
+$(BIN).o: $(BIN).c arg.h
+
 clean:
 	$(RM) $(BIN) *.o
 
