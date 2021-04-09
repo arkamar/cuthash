@@ -138,12 +138,12 @@ main(int argc, char * argv[]) {
 
 	while ((len = getline(&line, &cap, stdin)) > 0) {
 		line[--len] = '\0';
-		fwrite(line, 1, len, stdout);
 
 		EVP_DigestInit(ctx, md);
 
+		char * saveptr = NULL;
 		struct range * r = list;
-		for (c = 1, tok = strtok(line, separators); tok; tok = strtok(NULL, separators), c++) {
+		for (c = 1, tok = strtok_r(line, separators, &saveptr); tok; tok = strtok_r(NULL, separators, &saveptr), c++) {
 			if (!r)
 				break;
 			if (c >= r->min && c <= r->max) {
@@ -156,6 +156,7 @@ main(int argc, char * argv[]) {
 
 		EVP_DigestFinal(ctx, hash, &hash_len);
 
+		fwrite(line, 1, len, stdout);
 		fwrite(separators, 1, 1, stdout);
 
 		for (i = 0; i < hash_len; i++)
