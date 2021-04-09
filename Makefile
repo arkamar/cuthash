@@ -8,6 +8,8 @@ MANPREFIX = $(PREFIX)/share/man
 CPPFLAGS += -D_DEFAULT_SOURCE
 CPPFLAGS += -DOPENSSL_API_COMPAT=0x00908000L
 
+CFLAGS ?= -O2 -pipe
+CFLAGS += -Wall -pedantic -Werror=implicit-function-declaration
 CFLAGS += $(shell pkg-config --cflags libcrypto)
 LDLIBS += $(shell pkg-config --libs libcrypto)
 
