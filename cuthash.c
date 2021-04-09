@@ -6,13 +6,6 @@
 
 #include "arg.h"
 
-#if defined(DEBUG)
-#	define info(...) \
-	fprintf(stderr, "DBG: " __VA_ARGS__)
-#else
-#	define info(...)
-#endif
-
 #define MIN(x, y) ((x) < (y)) ? (x) : (y)
 #define MAX(x, y) ((x) > (y)) ? (x) : (y)
 
@@ -137,21 +130,30 @@ main(int argc, char * argv[]) {
 	ctx = EVP_MD_CTX_create();
 
 	while ((len = getline(&line, &cap, stdin)) > 0) {
-		line[--len] = '\0';
-
 		EVP_DigestInit(ctx, md);
 
-		char * saveptr = NULL;
 		struct range * r = list;
-		for (c = 1, tok = strtok_r(line, separators, &saveptr); tok; tok = strtok_r(NULL, separators, &saveptr), c++) {
+		tok = line + strspn(line, separators);
+		for (c = 1; *tok; c++) {
+			size_t tok_len = 0;
+			tok_len = strcspn(tok, separators);
 			if (!r)
 				break;
 			if (c >= r->min && c <= r->max) {
-				info("[%d]<%s>\n", c, tok);
-				EVP_DigestUpdate(ctx, tok, strlen(tok));
+#ifdef DEBUG
+				fprintf(stderr, "W[%02d,%03ld]<", c, tok_len);
+				fwrite(tok, 1, tok_len, stderr);
+				fputs(">\n", stderr);
+#endif
+				EVP_DigestUpdate(ctx, tok, tok_len);
 				if (c == r->max)
 					r = r->next;
 			}
+			tok += tok_len;
+			if (!*tok) {
+				break;
+			}
+			tok += strspn(tok, separators);
 		}
 
 		EVP_DigestFinal(ctx, hash, &hash_len);
@@ -161,7 +163,6 @@ main(int argc, char * argv[]) {
 		}
 		fwrite(separators, 1, 1, stdout);
 		fwrite(line, 1, len, stdout);
-		puts("");
 	}
 
 	free(line);
