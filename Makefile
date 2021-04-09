@@ -6,7 +6,7 @@ PREFIX = /usr
 MANPREFIX = $(PREFIX)/share/man
 
 CPPFLAGS += -D_DEFAULT_SOURCE
-CPPFLAGS += -DOPENSSL_API_COMPAT=0x00908000L
+CPPFLAGS += -DOPENSSL_API_COMPAT=0x10100000L
 
 CFLAGS ?= -O2 -pipe
 CFLAGS += -Wall -pedantic -Werror=implicit-function-declaration

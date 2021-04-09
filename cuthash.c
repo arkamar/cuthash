@@ -126,7 +126,7 @@ main(int argc, char * argv[]) {
 	parselist(*argv);
 
 	if (digest_algorithm) {
-		OpenSSL_add_all_digests();
+		OPENSSL_init_crypto(OPENSSL_INIT_ADD_ALL_DIGESTS, NULL);
 		md = EVP_get_digestbyname(digest_algorithm);
 		if (!md) {
 			fprintf(stderr, "Unknown message digest '%s'\n", digest_algorithm);
@@ -168,7 +168,7 @@ main(int argc, char * argv[]) {
 	free(list);
 
 	EVP_MD_CTX_destroy(ctx);
-	EVP_cleanup();
+	OPENSSL_cleanup();
 
 	return 0;
 }
