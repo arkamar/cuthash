@@ -30,4 +30,4 @@ install: all
 	@cp -f $(BIN).1 $(DESTDIR)$(MANPREFIX)/man1
 	@chmod 644 $(DESTDIR)$(MANPREFIX)/man1/$(BIN).1
 
-.PHONY: all claan install
+.PHONY: all clean install
